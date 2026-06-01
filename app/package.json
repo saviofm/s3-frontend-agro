@@ -1,0 +1,25 @@
+{
+  "name": "com.presales.objectstorefilemanageragro",
+  "version": "1.0.0",
+  "description": "SAPUI5 frontend for Object Store File Manager",
+  "scripts": {
+    "start": "ui5 serve --open index.html",
+    "build": "ui5 build --clean-dest",
+    "build:mta": "ui5 build --clean-dest && rm -rf deploy && mkdir deploy && cd dist && zip -r ../deploy/com.presales.objectstorefilemanageragro.zip .",
+    "lint": "ui5lint"
+  },
+  "devDependencies": {
+    "@sap/ux-ui5-tooling": "^1",
+    "@ui5/cli": "^4",
+    "@ui5/linter": "^1",
+    "ui5-tooling-transpile": "^3",
+    "typescript": "^5",
+    "@types/node": "^20"
+  },
+  "ui5": {
+    "dependencies": [
+      "@sap/ux-ui5-tooling",
+      "ui5-tooling-transpile"
+    ]
+  }
+}

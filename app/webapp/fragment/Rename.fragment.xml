@@ -1,0 +1,32 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+
+  <Dialog
+    id="renameDialog"
+    title="{i18n>dialogRenameTitle}"
+    contentWidth="24rem">
+    <content>
+      <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+        <Label text="{i18n>labelNewName}" required="true" />
+        <Input
+          id="renameInput"
+          value="{files>/renameValue}"
+          placeholder="{i18n>placeholderNewName}"
+          maxLength="255"
+          submit=".onRenameConfirm" />
+      </VBox>
+    </content>
+    <beginButton>
+      <Button
+        text="{i18n>btnRename}"
+        type="Emphasized"
+        press=".onRenameConfirm" />
+    </beginButton>
+    <endButton>
+      <Button
+        text="{i18n>btnCancel}"
+        press=".onRenameCancel" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

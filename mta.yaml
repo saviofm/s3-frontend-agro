@@ -1,0 +1,149 @@
+ID: object-store-file-manager-agro
+_schema-version: '3.3.0'
+version: 1.0.0
+description: SAP BTP Object Store File Manager
+
+parameters:
+  enable-parallel-deployments: true
+  deploy_mode: html5-repo
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci --prefix srv
+        - npm run build:backend
+        - npm ci --prefix app
+
+modules:
+
+  # ── Backend CAP ──────────────────────────────────────────────────────────────
+  - name: object-store-file-manager-agro-srv
+    type: nodejs
+    path: gen/srv
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 256M
+      disk-quota: 512M
+    build-parameters:
+      builder: npm
+    requires:
+      - name: object-store-file-manager-agro-xsuaa
+      - name: object-store-file-manager-agro-objectstore
+      - name: object-store-file-manager-agro-dest
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+
+  # ── Frontend deployer (HTML5 Application Repository) ─────────────────────────
+  - name: object-store-file-manager-agro-ui-deployer
+    type: com.sap.application.content
+    path: app
+    requires:
+      - name: object-store-file-manager-agro-html5repo
+        parameters:
+          content-target: true
+    build-parameters:
+      builder: custom
+      commands:
+        - npm run build:mta
+      build-result: deploy
+
+  # ── Destination content ───────────────────────────────────────────────────────
+  - name: object-store-file-manager-agro-dest-content
+    type: com.sap.application.content
+    requires:
+      - name: object-store-file-manager-agro-dest
+        parameters:
+          content-target: true
+      - name: object-store-file-manager-agro-html5repo
+        parameters:
+          service-key:
+            name: object-store-file-manager-agro-html5repo-key
+      - name: object-store-file-manager-agro-xsuaa
+        parameters:
+          service-key:
+            name: object-store-file-manager-agro-xsuaa-key
+      - name: srv-api
+    parameters:
+      content:
+        instance:
+          destinations:
+            - Name: object-store-file-manager-agro-backend
+              Authentication: OAuth2UserTokenExchange
+              TokenServiceInstanceName: object-store-file-manager-agro-xsuaa
+              TokenServiceKeyName: object-store-file-manager-agro-xsuaa-key
+              URL: ~{srv-api/srv-url}
+              sap.cloud.service: com.presales.objectstorefilemanageragro
+            - Name: object-store-file-manager-agro-html5repo
+              ServiceInstanceName: object-store-file-manager-agro-html5repo
+              ServiceKeyName: object-store-file-manager-agro-html5repo-key
+              sap.cloud.service: com.presales.objectstorefilemanageragro
+          existing_destinations_policy: update
+    build-parameters:
+      no-source: true
+
+resources:
+
+  # ── XSUAA ────────────────────────────────────────────────────────────────────
+  - name: object-store-file-manager-agro-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: object-store-file-manager-agro-${org}-${space}
+        tenant-mode: dedicated
+
+  # ── HTML5 Application Repository ─────────────────────────────────────────────
+  - name: object-store-file-manager-agro-html5repo
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  # ── Destination Service ───────────────────────────────────────────────────────
+  - name: object-store-file-manager-agro-dest
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+      config:
+        HTML5Runtime_enabled: true
+        version: 1.0.0
+        init_data:
+          instance:
+            destinations:
+              - Authentication: NoAuthentication
+                Name: ui5
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://ui5.sap.com
+            existing_destinations_policy: update
+          subaccount:
+            destinations:
+              - Name: sjoule-studio-grounding
+                Description: Object Store S3 grounding for SAP Joule Studio
+                Authentication: OAuth2ClientCredentials
+                clientId: REPLACE_ME_CLIENT_ID
+                clientSecret: REPLACE_ME_CLIENT_SECRET
+                tokenServiceURL: https://s3.amazonaws.com
+                ProxyType: Internet
+                Type: HTTP
+                URL: https://s3.amazonaws.com
+                HTML5.DynamicDestination: true
+                HTML5.Timeout: 300000
+                bucket: REPLACE_ME_BUCKET
+                host: s3.amazonaws.com
+                region: us-east-1
+                username: REPLACE_ME_USERNAME
+                type: S3
+                sap-joule-studio-document-grounding-object-store: true
+            existing_destinations_policy: update
+  - name: object-store-file-manager-agro-objectstore
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: objectstore
+      service-plan: s3-standard

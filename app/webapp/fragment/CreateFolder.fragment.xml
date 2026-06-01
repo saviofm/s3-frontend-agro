@@ -1,0 +1,33 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout">
+
+  <Dialog
+    id="createFolderDialog"
+    title="{i18n>dialogCreateFolderTitle}"
+    contentWidth="24rem">
+    <content>
+      <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+        <Label text="{i18n>labelFolderName}" required="true" />
+        <Input
+          id="folderNameInput"
+          value="{files>/newFolderName}"
+          placeholder="{i18n>placeholderFolderName}"
+          maxLength="255"
+          submit=".onCreateFolderConfirm" />
+      </VBox>
+    </content>
+    <beginButton>
+      <Button
+        text="{i18n>btnCreate}"
+        type="Emphasized"
+        press=".onCreateFolderConfirm" />
+    </beginButton>
+    <endButton>
+      <Button
+        text="{i18n>btnCancel}"
+        press=".onCreateFolderCancel" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

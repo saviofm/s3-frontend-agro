@@ -1,0 +1,30 @@
+{
+  "name": "object-store-file-manager-agro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SAP BTP Object Store File Manager — SAPUI5 frontend + CAP Node.js backend",
+  "workspaces": [
+    "app",
+    "srv"
+  ],
+  "scripts": {
+    "start": "cds watch",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cds build --production",
+    "build:frontend": "cd app && npm run build",
+    "deploy": "mbt build && cf deploy mta_archives/object-store-file-manager-agro_1.0.0.mtar",
+    "lint": "cd app && npx ui5lint"
+  },
+  "devDependencies": {
+    "@sap/cds-dk": "^8"
+  },
+  "cds": {
+    "model": "srv",
+    "requires": {
+      "auth": {
+        "[development]": { "kind": "dummy" },
+        "[production]":  { "kind": "xsuaa" }
+      }
+    }
+  }
+}

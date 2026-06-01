@@ -1,0 +1,27 @@
+{
+  "name": "object-store-file-manager-agro-srv",
+  "version": "1.0.0",
+  "description": "CAP Node.js backend for Object Store File Manager",
+  "main": "server.js",
+  "scripts": {
+    "start": "cds-serve",
+    "dev": "cds watch"
+  },
+  "dependencies": {
+    "@sap/cds": "^8",
+    "@sap/xssec": "^4",
+    "@aws-sdk/client-s3": "^3",
+    "@aws-sdk/s3-request-presigner": "^3",
+    "passport": "^0.7",
+    "multer": "^1",
+    "express": "^4"
+  },
+  "cds": {
+    "requires": {
+      "auth": {
+        "[development]": { "kind": "dummy" },
+        "[production]":  { "kind": "xsuaa" }
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+node_modules/
+gen/
+dist/
+mta_archives/
+*.mtar
+.env
+default-env.json
+.cdsrc-private.json
+app/deploy/
+*.log
+.DS_Store
+Thumbs.db

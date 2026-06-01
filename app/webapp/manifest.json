@@ -1,0 +1,133 @@
+{
+  "_version": "1.61.0",
+  "sap.app": {
+    "id": "com.presales.objectstorefilemanageragro",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "dataSources": {
+      "fileManagerApi": {
+        "uri": "/api/",
+        "type": "JSON"
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "objectstorefilemanageragro-inbound": {
+          "semanticObject": "ObjectStoreFileManagerAgro",
+          "action": "display",
+          "title": "{{appTitle}}",
+          "icon": "sap-icon://folder",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://folder"
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": false
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "com.presales.objectstorefilemanageragro"
+  },
+  "sap.platform.hcp": {
+    "uri": "webapp"
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "rootView": {
+      "viewName": "com.presales.objectstorefilemanageragro.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {},
+        "sap.f": {},
+        "sap.ui.unified": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.presales.objectstorefilemanageragro.i18n.i18n"
+        }
+      },
+      "files": {
+        "type": "sap.ui.model.json.JSONModel",
+        "settings": {
+          "data": {
+            "items": [],
+            "currentPrefix": "",
+            "breadcrumbs": [],
+            "busy": false,
+            "searchQuery": "",
+            "typeFilter": "all",
+            "selectedItems": [],
+            "canManage": false,
+            "folderTree": []
+          }
+        }
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "com.presales.objectstorefilemanageragro.view",
+        "controlId": "app",
+        "controlAggregation": "pages",
+        "async": true
+      },
+      "routes": [
+        {
+          "pattern": "",
+          "name": "home",
+          "target": "home"
+        }
+      ],
+      "targets": {
+        "home": {
+          "viewType": "XML",
+          "viewId": "home",
+          "viewName": "Home"
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/app.css"
+        }
+      ]
+    }
+  }
+}

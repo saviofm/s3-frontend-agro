@@ -1,0 +1,207 @@
+<mvc:View
+  controllerName="com.presales.objectstorefilemanageragro.controller.Home"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:core="sap.ui.core"
+  xmlns:unified="sap.ui.unified"
+  displayBlock="true">
+
+  <Page
+    id="mainPage"
+    showHeader="false"
+    backgroundDesign="List"
+    busy="{files>/busy}">
+
+    <customHeader>
+      <Bar>
+        <contentLeft>
+          <Title
+            text="{i18n>appTitle}"
+            level="H3"
+            titleStyle="H3" />
+        </contentLeft>
+        <contentRight>
+          <Button
+            icon="sap-icon://refresh"
+            tooltip="{i18n>btnRefresh}"
+            press=".onRefresh"
+            type="Transparent" />
+        </contentRight>
+      </Bar>
+    </customHeader>
+
+    <subHeader>
+      <Bar>
+        <contentLeft>
+          <!-- Toolbar de ações -->
+          <OverflowToolbar width="100%">
+            <Button
+              id="btnUpload"
+              icon="sap-icon://upload"
+              text="{i18n>btnUpload}"
+              press=".onUploadPress"
+              type="Emphasized" />
+            <Button
+              id="btnNewFolder"
+              icon="sap-icon://add-folder"
+              text="{i18n>btnNewFolder}"
+              press=".onCreateFolderPress" />
+            <ToolbarSeparator />
+            <Button
+              id="btnDownload"
+              icon="sap-icon://download"
+              text="{i18n>btnDownload}"
+              press=".onDownloadPress"
+              enabled="{= ${files>/selectedItems}.length === 1 &amp;&amp; !${files>/selectedItems/0/isFolder} }" />
+            <Button
+              id="btnMove"
+              icon="sap-icon://move"
+              text="{i18n>btnMove}"
+              press=".onMovePress"
+              enabled="{= ${files>/selectedItems}.length === 1 }" />
+            <Button
+              id="btnRename"
+              icon="sap-icon://edit"
+              text="{i18n>btnRename}"
+              press=".onRenamePress"
+              enabled="{= ${files>/selectedItems}.length === 1 }" />
+            <Button
+              id="btnDelete"
+              icon="sap-icon://delete"
+              text="{i18n>btnDelete}"
+              press=".onDeletePress"
+              type="Reject"
+              enabled="{= ${files>/selectedItems}.length >= 1 }" />
+            <ToolbarSpacer />
+            <!-- Filtro de tipo -->
+            <SegmentedButton
+              id="typeFilter"
+              selectionChange=".onTypeFilterChange"
+              selectedKey="{files>/typeFilter}">
+              <items>
+                <SegmentedButtonItem key="all"    text="{i18n>filterAll}" />
+                <SegmentedButtonItem key="file"   text="{i18n>filterFiles}" />
+                <SegmentedButtonItem key="folder" text="{i18n>filterFolders}" />
+              </items>
+            </SegmentedButton>
+            <!-- Busca -->
+            <SearchField
+              id="searchField"
+              width="14rem"
+              placeholder="{i18n>searchPlaceholder}"
+              liveChange=".onSearch"
+              search=".onSearch" />
+          </OverflowToolbar>
+        </contentLeft>
+      </Bar>
+    </subHeader>
+
+    <content>
+      <VBox class="sapUiMediumMarginTop sapUiMediumMarginBeginEnd">
+
+        <!-- Breadcrumb -->
+        <Breadcrumbs
+          id="breadcrumbs"
+          currentLocationText="{= ${files>/breadcrumbs}[${files>/breadcrumbs}.length-1].text }"
+          class="sapUiSmallMarginBottom" />
+
+        <!-- Tabela de arquivos -->
+        <Table
+          id="filesTable"
+          items="{
+            path: 'files>/filteredItems',
+            sorter: { path: 'isFolder', descending: true }
+          }"
+          mode="MultiSelect"
+          selectionChange=".onSelectionChange"
+          noDataText="{i18n>emptyFolder}"
+          growing="true"
+          growingThreshold="50"
+          alternateRowColors="true"
+          sticky="ColumnHeaders"
+          class="sapUiSizeCompact">
+
+          <headerToolbar>
+            <Toolbar>
+              <Title
+                text="{i18n>tableTitle}"
+                level="H5" />
+              <ToolbarSpacer />
+              <Text text="{
+                parts: [{path: 'files>/filteredItems'}, {path: 'i18n>itemsCount'}],
+                formatter: '.formatItemCount'
+              }" />
+            </Toolbar>
+          </headerToolbar>
+
+          <columns>
+            <Column width="2.5rem" />
+            <Column hAlign="Begin" minScreenWidth="Phone" popinDisplay="Inline">
+              <Text text="{i18n>colName}" />
+            </Column>
+            <Column width="6rem" minScreenWidth="Tablet" demandPopin="true">
+              <Text text="{i18n>colType}" />
+            </Column>
+            <Column width="6rem" hAlign="End" minScreenWidth="Tablet" demandPopin="true">
+              <Text text="{i18n>colSize}" />
+            </Column>
+            <Column width="10rem" minScreenWidth="Desktop" demandPopin="true">
+              <Text text="{i18n>colModified}" />
+            </Column>
+          </columns>
+
+          <items>
+            <ColumnListItem
+              press=".onItemPress"
+              type="Active">
+              <cells>
+                <!-- Ícone -->
+                <core:Icon
+                  src="{= ${files>isFolder} ? 'sap-icon://folder' : 'sap-icon://document' }"
+                  color="{= ${files>isFolder} ? '#0854a0' : '#6a6d70' }"
+                  size="1.2rem" />
+                <!-- Nome -->
+                <Text text="{files>name}" wrapping="false" />
+                <!-- Tipo -->
+                <Text text="{
+                  parts: [{path: 'files>isFolder'}, {path: 'i18n>typeFolder'}, {path: 'i18n>typeFile'}],
+                  formatter: '.formatItemType'
+                }" />
+                <!-- Tamanho -->
+                <ObjectNumber
+                  number="{
+                    path: 'files>size',
+                    type: 'sap.ui.model.type.FileSize',
+                    formatOptions: { binaryFilesize: false, maxFractionDigits: 1 }
+                  }"
+                  visible="{= !${files>isFolder} }"
+                  emphasized="false" />
+                <!-- Data -->
+                <Text
+                  text="{
+                    path: 'files>lastModified',
+                    type: 'sap.ui.model.odata.type.DateTimeOffset',
+                    formatOptions: { style: 'medium' }
+                  }" />
+              </cells>
+            </ColumnListItem>
+          </items>
+
+        </Table>
+      </VBox>
+    </content>
+
+    <!-- Upload area (hidden FileUploader trigger) -->
+    <dependents>
+      <unified:FileUploader
+        id="fileUploader"
+        multiple="true"
+        fileType=""
+        uploadUrl=""
+        buttonOnly="true"
+        visible="false" />
+    </dependents>
+
+  </Page>
+</mvc:View>

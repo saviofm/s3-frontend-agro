@@ -1,0 +1,191 @@
+# Object Store File Manager — API Tests
+# Requires: cds bind --exec --profile hybrid -- cds watch (localhost:4004)
+# VS Code: REST Client extension  |  IntelliJ: HTTP Client
+
+@base = http://localhost:4004/api
+@contentType = application/json
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1. LIST FILES — root
+# ─────────────────────────────────────────────────────────────────────────────
+### List root
+GET {{base}}/listFiles(prefix='')
+Accept: {{contentType}}
+
+### List subfolder (adjust prefix to an existing folder)
+GET {{base}}/listFiles(prefix='test-folder/')
+Accept: {{contentType}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 2. FOLDER TREE
+# ─────────────────────────────────────────────────────────────────────────────
+### Get full folder tree
+GET {{base}}/getFolderTree()
+Accept: {{contentType}}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. CREATE FOLDER
+# ─────────────────────────────────────────────────────────────────────────────
+### Create folder at root
+POST {{base}}/createFolder
+Content-Type: {{contentType}}
+
+{
+  "prefix": "",
+  "folderName": "test-folder"
+}
+
+### Create nested folder
+POST {{base}}/createFolder
+Content-Type: {{contentType}}
+
+{
+  "prefix": "test-folder/",
+  "folderName": "nested"
+}
+
+### Create folder — invalid name (expect 400)
+POST {{base}}/createFolder
+Content-Type: {{contentType}}
+
+{
+  "prefix": "",
+  "folderName": "../evil"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 4. UPLOAD (multipart — use curl or REST Client with file)
+# ─────────────────────────────────────────────────────────────────────────────
+### Upload file to root (REST Client: @file = path to local file)
+# POST http://localhost:4004/api/files/upload
+# Content-Type: multipart/form-data; boundary=----Boundary
+#
+# ------Boundary
+# Content-Disposition: form-data; name="prefix"
+#
+#
+# ------Boundary
+# Content-Disposition: form-data; name="files"; filename="hello.txt"
+# Content-Type: text/plain
+#
+# Hello from HTTP test!
+# ------Boundary--
+
+### Upload via curl (run in terminal):
+# curl -X POST http://localhost:4004/api/files/upload \
+#   -F "prefix=" \
+#   -F "files=@/tmp/hello.txt"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. DOWNLOAD
+# ─────────────────────────────────────────────────────────────────────────────
+### Download file (adjust key to an existing object)
+GET http://localhost:4004/api/files/download?key=hello.txt
+Accept: */*
+
+### Download from subfolder
+GET http://localhost:4004/api/files/download?key=test-folder/hello.txt
+Accept: */*
+
+### Download — missing key (expect 400)
+GET http://localhost:4004/api/files/download
+Accept: */*
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. RENAME
+# ─────────────────────────────────────────────────────────────────────────────
+### Rename file
+POST {{base}}/renameItem
+Content-Type: {{contentType}}
+
+{
+  "sourceKey": "hello.txt",
+  "newName": "hello-renamed.txt",
+  "itemType": "file"
+}
+
+### Rename folder
+POST {{base}}/renameItem
+Content-Type: {{contentType}}
+
+{
+  "sourceKey": "test-folder/",
+  "newName": "test-folder-renamed",
+  "itemType": "folder"
+}
+
+### Rename — invalid name (expect 400)
+POST {{base}}/renameItem
+Content-Type: {{contentType}}
+
+{
+  "sourceKey": "hello.txt",
+  "newName": "../../etc/passwd",
+  "itemType": "file"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. MOVE
+# ─────────────────────────────────────────────────────────────────────────────
+### Move file into subfolder
+POST {{base}}/moveItem
+Content-Type: {{contentType}}
+
+{
+  "sourceKey": "hello-renamed.txt",
+  "targetPrefix": "test-folder-renamed/",
+  "itemType": "file"
+}
+
+### Move folder into another folder
+POST {{base}}/moveItem
+Content-Type: {{contentType}}
+
+{
+  "sourceKey": "test-folder-renamed/nested/",
+  "targetPrefix": "",
+  "itemType": "folder"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 8. DELETE
+# ─────────────────────────────────────────────────────────────────────────────
+### Delete file
+POST {{base}}/deleteItem
+Content-Type: {{contentType}}
+
+{
+  "objectKey": "test-folder-renamed/hello-renamed.txt",
+  "itemType": "file",
+  "recursive": false
+}
+
+### Delete empty folder
+POST {{base}}/deleteItem
+Content-Type: {{contentType}}
+
+{
+  "objectKey": "nested/",
+  "itemType": "folder",
+  "recursive": false
+}
+
+### Delete folder recursively
+POST {{base}}/deleteItem
+Content-Type: {{contentType}}
+
+{
+  "objectKey": "test-folder-renamed/",
+  "itemType": "folder",
+  "recursive": true
+}
+
+### Delete — non-existent key (expect 404)
+POST {{base}}/deleteItem
+Content-Type: {{contentType}}
+
+{
+  "objectKey": "does-not-exist.txt",
+  "itemType": "file",
+  "recursive": false
+}

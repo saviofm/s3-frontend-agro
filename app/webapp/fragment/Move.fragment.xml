@@ -1,0 +1,37 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+
+  <Dialog
+    id="moveDialog"
+    title="{i18n>dialogMoveTitle}"
+    contentWidth="32rem">
+    <content>
+      <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginTopBottom">
+        <Label text="{i18n>labelTargetFolder}" />
+        <List
+          id="folderTreeList"
+          items="{files>/folderTree}"
+          mode="SingleSelectMaster"
+          selectionChange=".onMoveFolderSelect">
+          <StandardListItem
+            title="{files>name}"
+            description="{files>folderPrefix}"
+            info="{= ${files>level} > 0 ? '  '.repeat(${files>level}) : '' }"
+            type="Active" />
+        </List>
+      </VBox>
+    </content>
+    <beginButton>
+      <Button
+        text="{i18n>btnMove}"
+        type="Emphasized"
+        press=".onMoveConfirm" />
+    </beginButton>
+    <endButton>
+      <Button
+        text="{i18n>btnCancel}"
+        press=".onMoveCancel" />
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

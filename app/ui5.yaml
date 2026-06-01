@@ -1,0 +1,57 @@
+specVersion: "4.0"
+metadata:
+  name: com.presales.objectstorefilemanageragro
+type: application
+framework:
+  name: SAPUI5
+  version: "1.148.1"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: sap.f
+    - name: sap.ui.unified
+    - name: themelib_sap_horizon
+builder:
+  resources:
+    excludes:
+      - "/test/**"
+      - "/localService/**"
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: false
+        removeConsoleStatements: false
+        transpileAsync: true
+        includeTask: true
+  bundles:
+    - bundleDefinition:
+        name: "com.presales.objectstorefilemanageragro/Component-preload.js"
+        defaultFileTypes:
+          - ".js"
+          - ".fragment.xml"
+          - ".view.xml"
+          - ".properties"
+          - ".json"
+        sections:
+          - mode: preload
+            filters:
+              - "com.presales.objectstorefilemanageragro/"
+            resolve: true
+            renderer: false
+      bundleOptions:
+        optimize: false
+server:
+  customMiddleware:
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+      configuration:
+        debug: false
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        backend:
+          - path: /api
+            url: http://localhost:4004

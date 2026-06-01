@@ -1,0 +1,51 @@
+{
+  "xsappname": "object-store-file-manager-agro",
+  "tenant-mode": "dedicated",
+  "description": "Security configuration for Object Store File Manager",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.FileViewer",
+      "description": "View and download files from Object Store"
+    },
+    {
+      "name": "$XSAPPNAME.FileManager",
+      "description": "Upload, create folders, move, rename and delete files in Object Store"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "FileViewer",
+      "description": "Read-only access to files",
+      "scope-references": [
+        "$XSAPPNAME.FileViewer"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "FileManager",
+      "description": "Full access to file management operations",
+      "scope-references": [
+        "$XSAPPNAME.FileViewer",
+        "$XSAPPNAME.FileManager"
+      ],
+      "attribute-references": []
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "Object Store File Viewer",
+      "description": "Can view and download files",
+      "role-template-references": [
+        "$XSAPPNAME.FileViewer"
+      ]
+    },
+    {
+      "name": "Object Store File Manager",
+      "description": "Can manage all files and folders",
+      "role-template-references": [
+        "$XSAPPNAME.FileManager"
+      ]
+    }
+  ]
+}

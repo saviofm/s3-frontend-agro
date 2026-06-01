@@ -1,0 +1,25 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": { "browsers": "defaults" },
+        "modules": false
+      }
+    ],
+    [
+      "babel-preset-transform-ui5",
+      {
+        "autoConvertAllExtendClasses": true
+      }
+    ],
+    [
+      "@babel/preset-typescript",
+      {
+        "allExtensions": true,
+        "isTSX": false
+      }
+    ]
+  ],
+  "sourceMaps": true
+}
