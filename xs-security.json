@@ -34,15 +34,15 @@
   ],
   "role-collections": [
     {
-      "name": "Object Store File Viewer",
-      "description": "Can view and download files",
+      "name": "Object Store File Viewer Agro",
+      "description": "Can view and download files (Agro)",
       "role-template-references": [
         "$XSAPPNAME.FileViewer"
       ]
     },
     {
-      "name": "Object Store File Manager",
-      "description": "Can manage all files and folders",
+      "name": "Object Store File Manager Agro",
+      "description": "Can manage all files and folders (Agro)",
       "role-template-references": [
         "$XSAPPNAME.FileManager"
       ]
