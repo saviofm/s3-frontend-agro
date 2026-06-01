@@ -142,6 +142,9 @@ resources:
                 type: S3
                 sap-joule-studio-document-grounding-object-store: true
             existing_destinations_policy: ignore
+
+  # ── Object Store (S3-compatible) ──────────────────────────────────────────────
+  - name: object-store-file-manager-agro-objectstore
     type: org.cloudfoundry.managed-service
     parameters:
       service: objectstore
