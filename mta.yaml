@@ -124,7 +124,7 @@ resources:
             existing_destinations_policy: update
           subaccount:
             destinations:
-              - Name: sjoule-studio-grounding
+              - Name: sjoule-studio-grounding-agro
                 Description: Object Store S3 grounding for SAP Joule Studio
                 Authentication: OAuth2ClientCredentials
                 clientId: REPLACE_ME_CLIENT_ID
@@ -141,8 +141,7 @@ resources:
                 username: REPLACE_ME_USERNAME
                 type: S3
                 sap-joule-studio-document-grounding-object-store: true
-            existing_destinations_policy: update
-  - name: object-store-file-manager-agro-objectstore
+            existing_destinations_policy: ignore
     type: org.cloudfoundry.managed-service
     parameters:
       service: objectstore
